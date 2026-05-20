@@ -1,0 +1,24 @@
+# ============================================================
+# .gitignore — Archivos que Git NO debe subir a GitHub
+# ============================================================
+
+# Credenciales de base de datos — NUNCA subir
+php/config.local.php
+
+# Imágenes subidas por el usuario desde el dashboard
+img/uploads/
+
+# Archivos del sistema operativo (se generan solos)
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de editores de código
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de log de PHP
+*.log
+error_log
