@@ -1,0 +1,515 @@
+/* ============================================================
+   dashboard.css — Estilos del Panel Administrativo
+   Se carga junto con style.css (variables compartidas)
+============================================================ */
+
+/* ============================================================
+   LAYOUT GENERAL — Sidebar + Contenido principal
+============================================================ */
+
+/* El body del dashboard usa flex para sidebar + main lado a lado */
+.dashboard-body {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-deep);
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   SIDEBAR — Menú lateral
+============================================================ */
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+/* Encabezado del sidebar: logo + título */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    flex: 1;
+}
+
+/* Botón X para cerrar sidebar en mobile */
+.sidebar-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.25rem;
+    transition: color var(--transition);
+}
+.sidebar-close:hover { color: var(--text); }
+
+/* Bloque con nombre y rol del administrador */
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Avatar circular del admin */
+.user-avatar {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.user-nombre {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.user-rol {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* ---- Links de navegación del sidebar ---- */
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+}
+
+/* Cada link del menú lateral */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+    transition: background var(--transition), color var(--transition);
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+}
+
+/* Link activo (sección actualmente visible) */
+.sidebar-link.active {
+    background: rgba(59,130,246,0.15);
+    color: var(--primary);
+}
+
+/* Link de peligro (cerrar sesión) */
+.sidebar-link-danger:hover {
+    background: rgba(239,68,68,0.12);
+    color: #ef4444;
+}
+
+/* Badge de notificación (mensajes sin leer) */
+.badge-notif {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Footer del sidebar con acciones globales */
+.sidebar-footer {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+============================================================ */
+
+/* El main ocupa el espacio restante junto al sidebar */
+.dashboard-main {
+    margin-left: 260px;
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---- Topbar (cabecera del área de contenido) ---- */
+.dash-topbar {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Botón hamburguesa para mobile */
+.btn-menu-toggle {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+/* Título de la página actual */
+.dash-page-title {
+    flex: 1;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* ============================================================
+   SECCIONES DEL DASHBOARD
+============================================================ */
+
+/* Cada sección está oculta por defecto */
+.dash-seccion {
+    display: none;
+    padding: 2rem 1.5rem;
+    animation: fadeIn 0.25s ease;
+}
+
+/* Solo la sección activa se muestra */
+.dash-seccion.activa {
+    display: block;
+}
+
+/* Animación suave al cambiar de sección */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   TARJETAS DE ESTADÍSTICAS (inicio del dashboard)
+============================================================ */
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform var(--transition), box-shadow var(--transition);
+    /* El color de acento se pasa como variable CSS desde el HTML */
+    border-top: 3px solid var(--accent, var(--primary));
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+/* Ícono de la tarjeta stat */
+.stat-icono {
+    font-size: 1.8rem;
+    color: var(--accent, var(--primary));
+    margin-bottom: 0.75rem;
+}
+
+/* Número grande */
+.stat-numero {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* ============================================================
+   ACCESOS RÁPIDOS
+============================================================ */
+.acceso-rapido {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    text-align: center;
+}
+
+.acceso-rapido i { font-size: 1.5rem; color: var(--primary); }
+
+.acceso-rapido:hover {
+    background: rgba(59,130,246,0.08);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   TARJETAS DE CONTENIDO (tablas, formularios)
+============================================================ */
+.dash-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+/* Cabecera de tarjeta con título y botón de acción */
+.dash-card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+}
+
+.dash-card-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.dash-card-body {
+    padding: 1.5rem;
+}
+
+/* ============================================================
+   BOTONES DEL DASHBOARD
+============================================================ */
+
+/* Botón primario (azul) para acciones principales */
+.btn-dash-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.1rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: background var(--transition), transform var(--transition);
+    text-decoration: none;
+}
+.btn-dash-primary:hover {
+    background: var(--primary-h);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+/* ============================================================
+   TABLAS DE DATOS
+============================================================ */
+.tabla-dash {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.9rem;
+}
+
+/* Encabezados de columna */
+.tabla-dash thead th {
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Celdas del cuerpo de la tabla */
+.tabla-dash tbody td {
+    padding: 0.85rem 1rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+/* Hover sobre fila */
+.tabla-dash tbody tr:hover td {
+    background: rgba(255,255,255,0.03);
+}
+
+/* Quitar borde inferior en última fila */
+.tabla-dash tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Botones de acción dentro de la tabla ---- */
+.btn-editar, .btn-eliminar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: background var(--transition), transform var(--transition);
+}
+
+.btn-editar {
+    background: rgba(59,130,246,0.15);
+    color: var(--primary);
+}
+.btn-editar:hover {
+    background: rgba(59,130,246,0.28);
+    transform: translateY(-1px);
+}
+
+.btn-eliminar {
+    background: rgba(239,68,68,0.12);
+    color: #ef4444;
+}
+.btn-eliminar:hover {
+    background: rgba(239,68,68,0.25);
+    transform: translateY(-1px);
+}
+
+/* ============================================================
+   FORMULARIO DE BIOGRAFÍA
+============================================================ */
+
+/* Grid de dos columnas para el formulario de bio */
+.bio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Algunos campos ocupan toda la fila */
+.bio-grid .col-full { grid-column: 1 / -1; }
+
+/* ---- Input de color especial ---- */
+.form-input-color {
+    height: 44px;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+}
+
+/* ============================================================
+   BADGES DE CATEGORÍA en tablas
+============================================================ */
+.cat-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    color: var(--muted);
+}
+
+/* ============================================================
+   MENSAJES DE CONTACTO
+============================================================ */
+
+/* Fila de mensaje no leído (destacada) */
+.mensaje-no-leido td {
+    background: rgba(59,130,246,0.05);
+}
+
+/* Badge visual de estado leído/no leído */
+.estado-leido {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--muted);
+}
+.estado-no-leido {
+    background: var(--primary);
+    box-shadow: 0 0 6px var(--primary);
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile
+============================================================ */
+@media (max-width: 767px) {
+
+    /* En mobile, el sidebar se oculta fuera de pantalla */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    /* Cuando está abierto, se desliza dentro */
+    .sidebar.abierto {
+        transform: translateX(0);
+    }
+
+    /* El contenido ocupa toda la pantalla */
+    .dashboard-main {
+        margin-left: 0;
+    }
+
+    /* Formulario de bio en una sola columna */
+    .bio-grid {
+        grid-template-columns: 1fr;
+    }
+    .bio-grid .col-full {
+        grid-column: 1;
+    }
+
+    /* Padding reducido en mobile */
+    .dash-seccion {
+        padding: 1.25rem 1rem;
+    }
+
+    /* Ocultar columnas menos importantes en tablas */
+    .tabla-dash .col-ocultar-mobile {
+        display: none;
+    }
+}
