@@ -4,7 +4,7 @@
 
 # Credenciales de base de datos — NUNCA subir
 php/config.local.php
-
+php/hash.php
 # Imágenes subidas por el usuario desde el dashboard
 img/uploads/
 

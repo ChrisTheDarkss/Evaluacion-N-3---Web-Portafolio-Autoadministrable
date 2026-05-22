@@ -374,7 +374,7 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? 'Administrador';
 
                 <div class="mb-3">
                     <label class="form-label text-white">Orden de aparición</label>
-                    <input type="number" id="hab-orden" class="form-input" value="0" min="0">
+                    <select id="hab-orden" class="form-input"></select>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -438,7 +438,7 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? 'Administrador';
 
                 <div class="mb-3">
                     <label class="form-label text-white">Orden</label>
-                    <input type="number" id="tec-orden" class="form-input" value="0" min="0">
+                    <select id="tec-orden" class="form-input"></select>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -487,7 +487,7 @@ $admin_nombre = $_SESSION['usuario_nombre'] ?? 'Administrador';
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-white">Orden</label>
-                        <input type="number" id="proy-orden" class="form-input" value="0" min="0">
+                        <select id="proy-orden" class="form-input"></select>
                     </div>
                     <div class="col-12">
                         <label class="form-label text-white">URL Imagen</label>

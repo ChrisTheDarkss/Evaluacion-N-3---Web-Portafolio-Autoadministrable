@@ -251,6 +251,62 @@ async function guardarBiografia() {
 // SECCIÓN: HABILIDADES — CRUD
 // ============================================================
 
+/**
+ * Rellena un <select> de orden con las posiciones disponibles.
+ * Carga todos los registros del endpoint dado y construye opciones
+ * del 1 al total+1, excluyendo las posiciones ya ocupadas por OTROS
+ * registros (el propio registro —identificado por excluirId— puede
+ * conservar su posición actual).
+ *
+ * @param {string} selectId     - ID del elemento <select> en el DOM
+ * @param {string} endpoint     - URL de la API (p. ej. '../php/api/habilidades.php')
+ * @param {string} clave        - Clave del array en la respuesta JSON (p. ej. 'habilidades')
+ * @param {number|null} excluirId   - ID del registro que se está editando (null = nuevo)
+ * @param {number} ordenActual  - Valor de orden que debe quedar seleccionado
+ */
+async function cargarSelectOrden(selectId, endpoint, clave, excluirId, ordenActual) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    select.innerHTML = '<option disabled>Cargando…</option>';
+
+    try {
+        const data  = await ajax(endpoint);
+        const items = data[clave] || [];
+
+        // Posiciones ya ocupadas por OTROS registros
+        const ocupadas = new Set(
+            items
+                .filter(item => item.id !== excluirId)   // excluir el propio registro
+                .map(item => Number(item.orden))
+        );
+
+        // Rango: del 1 al total de registros + 1 (siempre hay sitio al final)
+        const max = items.length + 1;
+
+        select.innerHTML = '';
+        for (let i = 1; i <= max; i++) {
+            if (ocupadas.has(i)) continue;               // saltar posiciones tomadas
+            const opt = document.createElement('option');
+            opt.value       = i;
+            opt.textContent = `Posición ${i}`;
+            if (i === Number(ordenActual)) opt.selected = true;
+            select.appendChild(opt);
+        }
+
+        // Si el ordenActual no aparece en las opciones (p. ej. era 0 o ya no existe),
+        // seleccionar la primera opción disponible
+        if (!select.value || select.value === '0') {
+            select.selectedIndex = 0;
+        }
+
+    } catch (e) {
+        select.innerHTML = '<option value="1">Posición 1</option>';
+    }
+}
+
+
+
 /** Carga y renderiza la tabla de habilidades */
 async function cargarTablaHabilidades() {
     const contenedor = document.getElementById('tabla-habilidades');
@@ -326,16 +382,20 @@ async function cargarTablaHabilidades() {
  * Abre el modal de habilidad en modo crear o editar
  * Si se pasa id, rellena los campos para edición
  */
-function abrirModalHabilidad(id='', nombre='', icono='bi bi-code-slash', colorDesde='#3b82f6', colorHasta='#8b5cf6', orden=0) {
+async function abrirModalHabilidad(id='', nombre='', icono='bi bi-code-slash', colorDesde='#3b82f6', colorHasta='#8b5cf6', orden=0) {
     document.getElementById('hab-id').value          = id;
     document.getElementById('hab-nombre').value      = nombre;
     document.getElementById('hab-icono').value       = icono;
     document.getElementById('hab-color-desde').value = colorDesde;
     document.getElementById('hab-color-hasta').value = colorHasta;
-    document.getElementById('hab-orden').value       = orden;
 
     // Cambiar título según si es crear o editar
     document.getElementById('tituloModalHabilidad').textContent = id ? 'Editar Habilidad' : 'Nueva Habilidad';
+
+    // Cargar select de orden con posiciones disponibles
+    await cargarSelectOrden('hab-orden', '../php/api/habilidades.php', 'habilidades', id ? Number(id) : null, orden);
+
+    modalHabilidad.show();
 }
 
 /** Guarda (crea o actualiza) una habilidad */
@@ -347,7 +407,7 @@ async function guardarHabilidad() {
     datos.append('icono',       document.getElementById('hab-icono').value);
     datos.append('color_desde', document.getElementById('hab-color-desde').value);
     datos.append('color_hasta', document.getElementById('hab-color-hasta').value);
-    datos.append('orden',       document.getElementById('hab-orden').value);
+    datos.append('orden',       document.getElementById('hab-orden').value || 0);
 
     try {
         const res = await ajax('../php/api/habilidades.php', datos);
@@ -446,7 +506,7 @@ async function cargarTablaTecnologias() {
 }
 
 /** Abre el modal de tecnología en modo crear o editar */
-function abrirModalTecnologia(id='', nombre='', nivel=75, categoria='Frontend', colorDesde='#3b82f6', colorHasta='#06b6d4', orden=0) {
+async function abrirModalTecnologia(id='', nombre='', nivel=75, categoria='Frontend', colorDesde='#3b82f6', colorHasta='#06b6d4', orden=0) {
     document.getElementById('tec-id').value          = id;
     document.getElementById('tec-nombre').value      = nombre;
     document.getElementById('tec-nivel').value       = nivel;
@@ -454,8 +514,12 @@ function abrirModalTecnologia(id='', nombre='', nivel=75, categoria='Frontend', 
     document.getElementById('tec-categoria').value   = categoria;
     document.getElementById('tec-color-desde').value = colorDesde;
     document.getElementById('tec-color-hasta').value = colorHasta;
-    document.getElementById('tec-orden').value       = orden;
     document.getElementById('tituloModalTecnologia').textContent = id ? 'Editar Tecnología' : 'Nueva Tecnología';
+
+    // Cargar select de orden con posiciones disponibles
+    await cargarSelectOrden('tec-orden', '../php/api/tecnologias.php', 'tecnologias', id ? Number(id) : null, orden);
+
+    modalTecnologia.show();
 }
 
 /** Guarda (crea o actualiza) una tecnología */
@@ -468,7 +532,7 @@ async function guardarTecnologia() {
     datos.append('categoria',   document.getElementById('tec-categoria').value);
     datos.append('color_desde', document.getElementById('tec-color-desde').value);
     datos.append('color_hasta', document.getElementById('tec-color-hasta').value);
-    datos.append('orden',       document.getElementById('tec-orden').value);
+    datos.append('orden',       document.getElementById('tec-orden').value || 0);
 
     try {
         const res = await ajax('../php/api/tecnologias.php', datos);
@@ -575,10 +639,11 @@ async function abrirModalProyecto(id = '') {
     document.getElementById('proy-github').value      = '';
     document.getElementById('proy-tags').value        = '';
     document.getElementById('proy-imagen').value      = '';
-    document.getElementById('proy-orden').value       = 0;
     document.getElementById('tituloModalProyecto').textContent = id ? 'Editar Proyecto' : 'Nuevo Proyecto';
 
-    // Si es edición, cargar datos del proyecto
+    let ordenActual = 0;
+
+    // Si es edición, cargar datos del proyecto primero
     if (id) {
         try {
             const datos = new FormData();
@@ -593,11 +658,16 @@ async function abrirModalProyecto(id = '') {
             document.getElementById('proy-github').value      = p.github_url || '';
             document.getElementById('proy-tags').value        = p.tags || '';
             document.getElementById('proy-imagen').value      = p.imagen_url || '';
-            document.getElementById('proy-orden').value       = p.orden || 0;
+            ordenActual = p.orden || 0;
         } catch (e) {
             console.error('Error al cargar proyecto:', e);
         }
     }
+
+    // Cargar select de orden con posiciones disponibles
+    await cargarSelectOrden('proy-orden', '../php/api/proyectos.php', 'proyectos', id ? Number(id) : null, ordenActual);
+
+    modalProyecto.show();
 }
 
 /** Guarda (crea o actualiza) un proyecto */
@@ -611,7 +681,7 @@ async function guardarProyecto() {
     datos.append('github_url',  document.getElementById('proy-github').value);
     datos.append('tags',        document.getElementById('proy-tags').value);
     datos.append('imagen_url',  document.getElementById('proy-imagen').value);
-    datos.append('orden',       document.getElementById('proy-orden').value);
+    datos.append('orden',       document.getElementById('proy-orden').value || 0);
 
     try {
         const res = await ajax('../php/api/proyectos.php', datos);
