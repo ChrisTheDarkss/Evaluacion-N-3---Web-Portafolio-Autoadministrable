@@ -50,7 +50,7 @@ portafolio/
 
 ### 1. Clonar o descargar el proyecto
 ```bash
-git clone https://github.com/usuario/portafolio.git
+git clone https://github.com/ChrisTheDarkss/Evaluacion-N-3---Web-Portafolio-Autoadministrable.git
 ```
 
 ### 2. Importar la base de datos
@@ -79,7 +79,7 @@ define('DB_PASS', 'tu_contraseña_mysql');
 - ⚠️ Cambiar la contraseña después del primer acceso
 
 ## 🎨 Diseño Figma
-[Ver diseño en Figma](#) ← Reemplazar con el link real
+[https://www.figma.com/make/8cHgabMSBHJWhLwmW7iMef/Perfil-Estudiante-Interactivo?p=f&t=1fnYzFIko7up58cq-0](#) 
 
 ## 🤖 Uso de IA
 Ver documento `docs/uso_ia.md`

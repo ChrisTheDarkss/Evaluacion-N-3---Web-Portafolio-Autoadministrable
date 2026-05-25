@@ -513,3 +513,11 @@
         display: none;
     }
 }
+
+/* ============================================================
+   ESTILOS ESPECÍFICOS PARA SELECTS
+============================================================ */
+select.form-input option {
+    background-color: #0f172a; /* mismo fondo oscuro */
+    color: #ffffff;
+}
